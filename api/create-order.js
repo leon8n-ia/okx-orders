@@ -38,6 +38,7 @@ export default async function handler(req, res) {
       instId: signal.ticker + '-SWAP',
       tdMode: 'cross',
       side: signal.side.toLowerCase(),
+      posSide: 'net',  // Para modo de cobertura neto (requerido en SWAP)
       ordType: 'market',
       sz: '1'
     };
