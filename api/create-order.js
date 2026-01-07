@@ -46,31 +46,31 @@ export default async function handler(req, res) {
     if (signal.stopLoss || signal.target) {
       orderBody.attachAlgoOrds = [];
       
+      // Combinar SL y TP en un solo objeto
+      const algoOrder = {
+        tpTriggerPxType: 'last',
+        slTriggerPxType: 'last'
+      };
+      
       // Stop Loss
       if (signal.stopLoss) {
-        orderBody.attachAlgoOrds.push({
-          attachAlgoClOrdId: 'sl_' + Date.now(),
-          tpTriggerPx: '',
-          tpOrdPx: '',
-          slTriggerPx: String(signal.stopLoss),
-          slOrdPx: '-1',
-          tpTriggerPxType: 'last',
-          slTriggerPxType: 'last'
-        });
+        algoOrder.slTriggerPx = String(signal.stopLoss);
+        algoOrder.slOrdPx = '-1';
+      } else {
+        algoOrder.slTriggerPx = '';
+        algoOrder.slOrdPx = '';
       }
       
       // Take Profit
       if (signal.target) {
-        orderBody.attachAlgoOrds.push({
-          attachAlgoClOrdId: 'tp_' + Date.now(),
-          tpTriggerPx: String(signal.target),
-          tpOrdPx: '-1',
-          slTriggerPx: '',
-          slOrdPx: '',
-          tpTriggerPxType: 'last',
-          slTriggerPxType: 'last'
-        });
+        algoOrder.tpTriggerPx = String(signal.target);
+        algoOrder.tpOrdPx = '-1';
+      } else {
+        algoOrder.tpTriggerPx = '';
+        algoOrder.tpOrdPx = '';
       }
+      
+      orderBody.attachAlgoOrds.push(algoOrder);
     }
 
     // Convertir a string
