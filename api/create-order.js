@@ -42,7 +42,7 @@ export default async function handler(req, res) {
       side: side,
       posSide: side === 'buy' ? 'long' : 'short',
       ordType: 'market',
-      sz: '1'
+      sz: '0.1'
     };
 
     // Agregar SL/TP usando attachAlgoOrds (formato correcto de OKX)
@@ -124,3 +124,4 @@ export default async function handler(req, res) {
     });
   }
 }
+
