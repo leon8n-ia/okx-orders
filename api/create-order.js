@@ -34,11 +34,13 @@ export default async function handler(req, res) {
     const timestamp = new Date().toISOString();
 
     // Construir body de la orden
+    const side = signal.side.toLowerCase();
+    
     const orderBody = {
       instId: signal.ticker + '-SWAP',
       tdMode: 'cross',
-      side: signal.side.toLowerCase(),
-      posSide: 'net',  // Para modo de cobertura neto (requerido en SWAP)
+      side: side,
+      posSide: side === 'buy' ? 'long' : 'short',
       ordType: 'market',
       sz: '1'
     };
