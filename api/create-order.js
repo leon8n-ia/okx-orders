@@ -42,15 +42,35 @@ export default async function handler(req, res) {
       sz: '1'
     };
 
-    // Agregar SL/TP si existen
-    if (signal.stopLoss) {
-      orderBody.slTriggerPx = String(signal.stopLoss);
-      orderBody.slOrdPx = '-1';
-    }
-
-    if (signal.target) {
-      orderBody.tpTriggerPx = String(signal.target);
-      orderBody.tpOrdPx = '-1';
+    // Agregar SL/TP usando attachAlgoOrds (formato correcto de OKX)
+    if (signal.stopLoss || signal.target) {
+      orderBody.attachAlgoOrds = [];
+      
+      // Stop Loss
+      if (signal.stopLoss) {
+        orderBody.attachAlgoOrds.push({
+          attachAlgoClOrdId: 'sl_' + Date.now(),
+          tpTriggerPx: '',
+          tpOrdPx: '',
+          slTriggerPx: String(signal.stopLoss),
+          slOrdPx: '-1',
+          tpTriggerPxType: 'last',
+          slTriggerPxType: 'last'
+        });
+      }
+      
+      // Take Profit
+      if (signal.target) {
+        orderBody.attachAlgoOrds.push({
+          attachAlgoClOrdId: 'tp_' + Date.now(),
+          tpTriggerPx: String(signal.target),
+          tpOrdPx: '-1',
+          slTriggerPx: '',
+          slOrdPx: '',
+          tpTriggerPxType: 'last',
+          slTriggerPxType: 'last'
+        });
+      }
     }
 
     // Convertir a string
@@ -89,7 +109,7 @@ export default async function handler(req, res) {
       debug: {
         timestamp,
         orderBody,
-        prehash: prehash.substring(0, 100) + '...' // Solo parte del prehash por seguridad
+        hasAttachedOrders: !!orderBody.attachAlgoOrds
       }
     });
 
